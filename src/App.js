@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
-
+import Input from "./pages/Input";
+import Display  from "./pages/Display";
+import CircularProgress from '@mui/material/CircularProgress';
+import { useState } from "react";
 function App() {
+  const [pincode,setPincode] = useState("");
+  const [search,setSearch] = useState(false);
+  const [data, setData] = useState();
+  const searchData = async() =>{
+    if(pincode.length<=5){
+      alert("Enter Valid Pincode i.e. 6 digit pincode");
+      return;
+    }
+    setSearch(true);
+    const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const json = await response.json();
+    console.log("hello",json);
+    setData([json])
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     {(!data && !search)
+     ?<Input pincode={pincode} setPincode={setPincode} handleClick={searchData}/>
+     :(!data && search)?<CircularProgress />:<Display pincode={pincode} data={data}/>}
     </div>
   );
 }
